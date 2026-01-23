@@ -39,7 +39,7 @@ const HeroSection = () => {
   }
 
   return (
-    <div className="w-full bg-[#dc2626] overflow-visible px-4 sm:py-0 md:py-0 lg:py-0 sm:px-6 md:px-6 lg:px-14 xl:px-20 flex items-center justify-between gap-6 relative z-100 py-2 select-none">
+    <div className="w-full bg-[#dc2626] shadow-md overflow-visible px-4 sm:py-0 md:py-0 lg:py-0 sm:px-6 md:px-6 lg:px-14 xl:px-20 flex items-center justify-between gap-6 relative z-100 py-2 select-none">
       {/* Logo */}
       <div className="flex items-center">
         <img

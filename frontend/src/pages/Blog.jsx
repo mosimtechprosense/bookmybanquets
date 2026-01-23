@@ -376,10 +376,10 @@ const Blog = () => {
           </main>
 
           {/* SIDEBAR */}
-          <aside className="lg:col-span-4 space-y-8">
+          <aside className="lg:col-span-4 space-y-5 lg:mt-2 lg:sticky lg:top-2 self-start">
             <div className="bg-white rounded-3xl shadow-sm p-6">
-              <h3 className="font-bold text-xl mb-4">Recent Posts</h3>
-              <ul className="space-y-3">
+              <h3 className="font-bold text-xl mb-1">Recent Posts</h3>
+              <ul className="space-y-1.5">
                 {recentPosts.map((rp) => (
                   <li key={rp.id}>
                     <li key={rp.id}>
@@ -396,8 +396,8 @@ const Blog = () => {
             </div>
 
             <div className="bg-white rounded-3xl shadow-sm p-6">
-              <h3 className="font-bold text-xl mb-4">Categories</h3>
-              <ul className="space-y-2">
+              <h3 className="font-bold text-xl mb-1">Categories</h3>
+              <ul className="space-y-1">
                 {categories.map((cat) => (
                   <li key={cat.id}>
                     <button
