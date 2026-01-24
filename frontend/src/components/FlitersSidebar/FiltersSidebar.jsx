@@ -11,6 +11,8 @@ export default function FiltersSidebar({
   initialVenue = "",
   initialLocation = ""
 }) {
+
+  
   return (
     <aside className="bg-white p-4 rounded-lg shadow md:w-72 select-none
     md:sticky md:top-4

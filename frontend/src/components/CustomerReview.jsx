@@ -1,9 +1,11 @@
-import {aarav, aditya, manish, priya, rajiv, rohan,} from "../assets/index.js";
-import "../style/customerReview.css"
-
+import { useState } from "react";
+import { aarav, aditya, manish, priya, rajiv, rohan } from "../assets/index.js";
+import "../style/customerReview.css";
 
 const CustomerReview = () => {
-  const reviewData = [
+  const [paused, setPaused] = useState(false);
+
+const reviewData = [
     {
       name: "Rohan Desai",
       img: rohan,
@@ -42,31 +44,36 @@ const CustomerReview = () => {
     },
   ];
 
-  // Duplicate the list for infinite scrolling
   const infiniteReviews = [...reviewData, ...reviewData, ...reviewData];
 
   return (
-    <div className="relative flex flex-col items-center justify-center py-10 bg-gray-50 overflow-hidden">
-      <h3 className="text-2xl sm:text-3xl font-semibold mb-8 text-gray-800 w-full text-left sm:text-center sm: px-4">
+    <div className="relative flex flex-col items-center py-10 bg-gray-50 overflow-hidden">
+      <h3 className="text-2xl sm:text-3xl font-semibold mb-8 text-gray-800 w-full text-center px-4">
         What Our Customers Are Saying
       </h3>
 
-      {/* Infinite Auto-Scrolling Section */}
       <div className="w-full overflow-hidden">
-        <div className="flex animate-scroll gap-6 px-6">
+        <div
+          className="flex animate-scroll gap-6 px-6"
+          style={{
+            animationPlayState: paused ? "paused" : "running",
+          }}
+        >
           {infiniteReviews.map((data, i) => (
             <div
               key={i}
-              className="flex flex-col justify-between flex-shrink-0 bg-white shadow-even rounded-2xl m-2 p-5 w-[90%] sm:w-[45%] lg:w-[30%] text-center"
-              style={{ minHeight: "320px" }} // ensures uniform card height
+              className="flex flex-col justify-between flex-shrink-0 bg-white shadow-even rounded-2xl m-2 p-5 w-[90%] sm:w-[45%] lg:w-[30%] text-center cursor-pointer"
+              style={{ minHeight: "320px" }}
+              onMouseEnter={() => setPaused(true)}     // 🖥️ hover pause
+              onMouseLeave={() => setPaused(false)}    // 🖥️ resume
+              onTouchStart={() => setPaused(true)}     // 📱 touch & hold pause
+              onTouchEnd={() => setPaused(false)}      // 📱 release resume
             >
-              {/* Review Text */}
               <p className="text-gray-700 italic mb-4">
                 "{data.description}"
               </p>
 
-              {/* Reviewer Info (bottom-aligned) */}
-              <div className="mt-auto flex flex-col gap-3 items-center justify-end">
+              <div className="mt-auto flex flex-col items-center">
                 <img
                   src={data.img}
                   alt={data.name}

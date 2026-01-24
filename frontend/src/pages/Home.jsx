@@ -158,6 +158,8 @@ const serviceSlug = categoryToSlug[selectedService.categoryId] || "banquet-hall"
 
   return (
     <div className="w-full select-none">
+
+      
       {/*  Hero Section */}
       <div
         className="h-[70vh] sm:h-[80vh] lg:h-[90vh] bg-cover bg-center flex flex-col items-center justify-center relative"
