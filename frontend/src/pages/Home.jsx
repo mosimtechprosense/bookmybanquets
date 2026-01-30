@@ -5,14 +5,14 @@ import { IoIosSearch } from "react-icons/io"
 import { useNavigate } from "react-router-dom"
 import homeWalpaper from "../assets/homeWalpaper.avif"
 import CustomerReview from "../components/CustomerReview"
-
-
 import HowItWorks from "../components/HowItWorks"
 import Categories from "../components/Categories"
 import OfferBanner from "../components/OfferBanner"
 import RecommendedListings from "../components/ListingCards/RecommendedListings"
 import HighlyDemandedListings from "../components/ListingCards/HighlyDemandedListings"
 import HomeBlogSection from "../components/HomeBlogSection"
+
+
 
 const Home = () => {
 const services = [
@@ -73,7 +73,6 @@ const categoryToSlug = {
   // Fetch locations once on mount
   useEffect(() => {
     fetch("http://localhost:5000/api/locations")
-    
       .then((res) => res.json())
       .then((data) => {
         setLocations(data.data || [])
