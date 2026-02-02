@@ -106,8 +106,10 @@ export default function UserFormModal({ editingUser, onClose, onSaved }) {
             onChange={(e) => setForm({ ...form, role: e.target.value })}
             className="w-full border border-gray-300 rounded-md px-3 py-3 mt-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           >
+            <option value="ADMIN">Admin</option>
             <option value="LEAD_USER">Lead User</option>
-            <option value="DATA_ENTRY_USER">Data Entry</option>
+            <option value="DATA_ENTRY_USER">Data Entry User</option>
+            <option value="VENUE_MANAGER">Venue Manager</option>
           </select>
         </div>
 

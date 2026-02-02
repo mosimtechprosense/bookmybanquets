@@ -18,11 +18,6 @@ export const AdminAuthProvider = ({ children }) => {
           role: payload.role,
           full_access: payload.full_access || false,
         });
-
-        // Optional: redirect automatically if token exists
-        if (payload.role === "SUPER_ADMIN" || payload.role === "ADMIN") {
-          navigate("/admin/dashboard");
-        }
       } catch {
         // Invalid token
         localStorage.removeItem("admin_token");

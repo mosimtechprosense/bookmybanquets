@@ -8,7 +8,7 @@ const SALT_ROUNDS = 10;
 
 // --- User CRUD ---
 export const createUser = async ({ name, email, password, role, is_active }) => {
-  if (!["LEAD_USER", "DATA_ENTRY_USER", "VENUE_MANAGER"].includes(role)) throw new Error("Invalid role");
+  if (!["LEAD_USER", "DATA_ENTRY_USER", "VENUE_MANAGER", "ADMIN"].includes(role)) throw new Error("Invalid role");
 
   if (!password || password.length < 6) {
     throw new Error("Password must be at least 6 characters");
@@ -29,12 +29,16 @@ export const createUser = async ({ name, email, password, role, is_active }) => 
   return user;
 };
 
-export const listUsers = async () => {
-  return await prisma.admins.findMany({
-    where: { role: { not: "ADMIN" } },
+export const listUsers = async (currentRole) => {
+  return prisma.admins.findMany({
+    where:
+      currentRole === "SUPER_ADMIN"
+        ? {}
+        : { role: { not: "SUPER_ADMIN" } },
     select: { id: true, name: true, email: true, role: true, is_active: true },
   });
 };
+
 
 export const updateUser = async (id, data) => {
   const { password, ...safeData } = data; 
@@ -49,6 +53,14 @@ export const updateUser = async (id, data) => {
 export const deleteUser = async (id) => {
   return await prisma.admins.delete({
     where: { id: BigInt(id) },
+  });
+};
+
+
+export const getUserById = async (id) => {
+  return await prisma.admins.findUnique({
+    where: { id: BigInt(id) },
+    select: { id: true, name: true, email: true, role: true, is_active: true },
   });
 };
 

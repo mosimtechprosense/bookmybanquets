@@ -1,6 +1,29 @@
 export const onlyAdmin = (req, res, next) => {
-  if (req.user.role !== "ADMIN" && req.user.role !== "SUPER_ADMIN") {
-    return res.status(403).json({ message: "Admin only" });
+  const role = req.user?.role;
+
+  if (!role) {
+    return res.status(401).json({ message: "Unauthorized" });
   }
-  next();
+
+  if (role === "SUPER_ADMIN" || role === "ADMIN") {
+    return next();
+  }
+
+  return res.status(403).json({
+    success: false,
+    message: "Access denied",
+  });
+};
+
+
+export const allowRoles = (...roles) => {
+  return (req, res, next) => {
+    const role = req.user?.role;
+
+    if (!role || !roles.includes(role)) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    next();
+  };
 };

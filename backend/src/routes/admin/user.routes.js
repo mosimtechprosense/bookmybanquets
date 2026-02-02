@@ -1,14 +1,18 @@
 import express from "express";
 import { auth } from "../../middlewares/admin/auth.middleware.js";
-import { onlyAdmin } from "../../middlewares/admin/user.middleware.js";
-import { createUserController, listUsersController, updateUserController, deleteUserController, adminResetPasswordController } from "../../controllers/admin/user.controller.js";
+import { allowRoles } from "../../middlewares/admin/user.middleware.js";
+import { createUserController, listUsersController, updateUserController, deleteUserController, adminResetPasswordController, getUserByIdController } from "../../controllers/admin/user.controller.js";
 
 const router = express.Router();
 
-router.use(auth, onlyAdmin); // Protected for ADMIN only
+// Protect EVERYTHING below
+router.use(auth);
+router.use(allowRoles("ADMIN", "SUPER_ADMIN"));
 
-router.post("/", createUserController);
+
 router.get("/", listUsersController);
+router.post("/", createUserController);
+router.get("/:id", getUserByIdController);
 router.put("/:id", updateUserController);
 router.put("/:id/reset-password", adminResetPasswordController);
 router.delete("/:id", deleteUserController);

@@ -11,9 +11,15 @@ const menu = [
       { name: "Permissions", path: "/admin/permissions" },
     ],
   },
-
+  {
+  label: "Task Management",
+  children: [
+    { label: "Leads", path: "/admin/leads" },
+    { label: "All Tasks", path: "/admin/tasks" }
+  ]
+}
+,
   { name: "Listings", path: "/admin/listings" },
-  { name: "Leads", path: "/admin/leads" },
 ];
 
 export default function Sidebar() {

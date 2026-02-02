@@ -1,4 +1,4 @@
-import { createUser, listUsers, updateUser, deleteUser, adminResetPassword } from "../../services/admin/user.service.js";
+import { createUser, listUsers, updateUser, deleteUser, adminResetPassword, getUserById } from "../../services/admin/user.service.js";
 
 export const createUserController = async (req, res) => {
   try {
@@ -10,9 +10,16 @@ export const createUserController = async (req, res) => {
 };
 
 export const listUsersController = async (req, res) => {
-  const users = await listUsers();
-  res.json(users);
+  try {
+    const currentRole = req.user.role; 
+    const users = await listUsers(currentRole);
+    res.json(users);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 };
+
+
 
 export const updateUserController = async (req, res) => {
   const { id } = req.params;
@@ -24,6 +31,21 @@ export const deleteUserController = async (req, res) => {
   const { id } = req.params;
   await deleteUser(id);
   res.json({ message: "User deleted" });
+};
+
+
+export const getUserByIdController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await getUserById(id);
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: err.message });
+  }
 };
 
 

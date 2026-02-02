@@ -5,6 +5,7 @@ import localityContentRoutes from "./public/localityContent.routes.js";
 import contactRoutes from "./public/contact.routes.js"
 import adminAuthRoutes from "./admin/auth.routes.js";
 import adminUserRoutes from "./admin/user.routes.js";
+import dashboardRoutes from "./admin/dashboard.routes.js";
 
 
 const router = express.Router();
@@ -20,5 +21,7 @@ router.use("/contact", contactRoutes);
 // admin routes
 router.use("/admin/auth", adminAuthRoutes);
 router.use("/admin/users", adminUserRoutes);
+router.use("/admin/dashboard", dashboardRoutes);
+
 
 export default router;
