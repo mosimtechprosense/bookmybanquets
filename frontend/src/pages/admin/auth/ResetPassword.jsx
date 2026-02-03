@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { requestPasswordReset, resetPassword } from "../../../api/adminApi";
+import { requestPasswordReset, resetPassword } from "../../../api/admin/adminApi.js";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 export default function ResetPassword() {

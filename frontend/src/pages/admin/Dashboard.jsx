@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getDashboardStats } from "../../api/adminApi";
+import { getDashboardStats } from "../../api/admin/adminApi.js";
 import StatCard from "../../components/admin/cards/StatCard";
 
 export default function Dashboard() {

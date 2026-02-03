@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { createUser, updateUser } from "../../api/adminApi";
+import { createUser, updateUser } from "../../api/admin/adminApi.js";
 
 export default function UserFormModal({ editingUser, onClose, onSaved }) {
   const [form, setForm] = useState({

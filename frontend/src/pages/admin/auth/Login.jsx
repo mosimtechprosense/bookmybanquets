@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import adminApi, { loginWithPassword } from "../../../api/adminApi"
+import adminApi, { loginWithPassword } from "../../../api/admin/adminApi.js"
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"
 
 export default function Login() {

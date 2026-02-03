@@ -1,6 +1,6 @@
 // src/admin/Listings.jsx
 import { useEffect, useState } from "react";
-import { getListings } from "../../api/adminApi";;
+import { getListings } from "../../api/admin/adminApi.js";
 import DataTable from "../../components/admin/tables/DataTable";
 
 export default function Listings() {

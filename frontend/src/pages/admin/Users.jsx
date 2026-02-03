@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { getUsers, deleteUser, adminResetPassword } from "../../api/adminApi"
+import { getUsers, deleteUser, adminResetPassword } from "../../api/admin/adminApi.js"
 import { FaEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 

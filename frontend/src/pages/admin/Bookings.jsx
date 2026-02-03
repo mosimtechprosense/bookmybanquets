@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import DataTable from "../../components/admin/tables/DataTable";
-import adminApi from "../../api/adminApi";;
+import adminApi from "../../api/admin/adminApi.js"
 
 export default function Bookings() {
   const [bookings, setBookings] = useState([]);

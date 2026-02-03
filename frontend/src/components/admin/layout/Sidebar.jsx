@@ -12,10 +12,10 @@ const menu = [
     ],
   },
   {
-  label: "Task Management",
+  name: "Task Management",
   children: [
-    { label: "Leads", path: "/admin/leads" },
-    { label: "All Tasks", path: "/admin/tasks" }
+    { name: "Leads", path: "/admin/leads" },
+    { name: "All Tasks", path: "/admin/tasks" }
   ]
 }
 ,

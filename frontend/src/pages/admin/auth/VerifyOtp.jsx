@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { verifyLoginOTP } from "../../../api/adminApi";
+import { verifyLoginOTP } from "../../../api/admin/adminApi.js";
 import { useAdminAuth } from "../../../store/AdminAuthContext";
 
 export default function VerifyOtp() {

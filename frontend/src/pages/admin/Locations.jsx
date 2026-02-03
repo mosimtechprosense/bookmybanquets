@@ -1,6 +1,6 @@
 // src/admin/Locations.jsx
 import { useEffect, useState } from "react";
-import { getLocations } from "../../api/adminApi";
+import { getLocations } from "../../api/admin/adminApi.js";
 import DataTable from "../../components/admin/tables/DataTable";
 
 export default function Locations() {

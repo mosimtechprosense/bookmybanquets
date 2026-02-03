@@ -1,24 +1,44 @@
 import { useEffect, useState } from "react";
-import { getLeads } from "../../api/adminApi";
-import DataTable from "../../components/admin/tables/DataTable";
+import { fetchLeads } from "../../api/admin/lead.api";
+import { useNavigate } from "react-router-dom";
 
 export default function Leads() {
   const [leads, setLeads] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    getLeads().then((res) => setLeads(res.data));
+    fetchLeads().then(res => setLeads(res.data));
   }, []);
 
-  const columns = [
-    { key: "name", label: "Name" },
-    { key: "phone", label: "Phone" },
-    { key: "event_date", label: "Event Date" },
-  ];
-
   return (
-    <>
-      <h1 className="text-xl font-bold mb-4">Leads</h1>
-      <DataTable columns={columns} data={leads} />
-    </>
+    <div>
+      <h2>Leads</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Edit</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {leads.map(l => (
+            <tr key={l.id}>
+              <td>{l.name || "-"}</td>
+              <td>{l.phone}</td>
+              <td>{l.status}</td>
+              <td>
+                <button onClick={() => navigate(`/admin/leads/${l.id}`)}>
+                  ✏️
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
