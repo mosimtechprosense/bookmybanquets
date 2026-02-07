@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams, useLocation } from "react-router-dom"
 import { useEffect, useState, useContext } from "react"
 import { fetchListingById, fetchSimilarListings } from "../api/listingsApi"
 import { LuArrowLeft, LuArrowRight, LuX } from "react-icons/lu"
@@ -16,17 +16,29 @@ import { categoryToSlug, categoryToVenuePath } from "../utils/slugMaps"
 
 export default function ListingDetailsDynamic() {
   const { id, serviceSlug } = useParams()
+    const navigate = useNavigate()
+  const location = useLocation();
 
   const [listing, setListing] = useState(null)
   const [similarListings, setSimilarListings] = useState([])
   const [loading, setLoading] = useState(true)
   const [showAllKeywords, setShowAllKeywords] = useState(false)
   const { setPopupOpen } = useContext(UIContext)
-  const navigate = useNavigate()
+
 
   // Image modal
   const [activeImageIndex, setActiveImageIndex] = useState(null)
   useEffect(() => {
+      // 🚨 STOP invalid cases BEFORE API calls
+  if (
+    location.pathname.startsWith("/admin") ||
+    !id ||
+    isNaN(Number(id))
+  ) {
+    setLoading(false);
+    return;
+  }
+
     let isMounted = true
     setLoading(true)
 
@@ -50,11 +62,22 @@ export default function ListingDetailsDynamic() {
     return () => {
       isMounted = false
     }
-  }, [id])
+  }, [id, location.pathname])
 
-  if (loading) return <div className="py-20 text-center">Loading…</div>
-  if (!listing)
-    return <div className="py-20 text-center">Listing not found</div>
+if (loading) return <div className="py-20 text-center">Loading…</div>;
+
+if (
+  location.pathname.startsWith("/admin") ||
+  !id ||
+  isNaN(Number(id))
+) {
+  return null;
+}
+
+if (!listing) {
+  return <div className="py-20 text-center">Listing not found</div>;
+}
+
 
   const images = listing.venue_images ?? []
   const keywordsArray = listing.keywords?.split(",") ?? []

@@ -11,28 +11,72 @@ import {
   updateLeadEvent,
   deleteLeadEvent,
   createLead,
-  deleteLead
+  deleteLead,
+  getLeadsPaginated
 } from "../../services/admin/lead.service.js";
 
 
 //* LEADS
 export const listLeadsController = async (req, res) => {
-  const leads = await getLeads();
-  res.json(leads);
+  const page = Number(req.query.page || 1);
+  const limit = Number(req.query.limit || 10);
+  const search = req.query.search || "";
+
+  const result = await getLeadsPaginated({ page, limit, search });
+
+  res.json(result);
 };
 
 export const getLeadController = async (req, res) => {
   const lead = await getLeadById(req.params.id);
   if (!lead) {
+    
+    
     return res.status(404).json({ message: "Lead not found" });
   }
   res.json(lead);
 };
 
 export const createLeadController = async (req, res) => {
-  const lead = await createLead(req.body);
-  res.status(201).json(lead);
+  try {
+    // Validate and parse event_date
+    let eventDate = null;
+    if (req.body.event_date) {
+      const parsed = new Date(req.body.event_date);
+      if (!isNaN(parsed.getTime())) {
+        eventDate = parsed;
+      } else {
+        return res.status(400).json({ message: "Invalid event_date" });
+      }
+    }
+
+    const data = {
+      name: req.body.name || null,
+      email: req.body.email || null,
+      phone: req.body.phone || null,
+      preferred_location: req.body.preferred_location || null,
+      source: req.body.source || null,
+      no_guest: req.body.no_guest || null,
+      event_date: eventDate, //
+      slot: req.body.slot || null,
+      menu: req.body.menu || null,
+      event_type: req.body.event_type || null,
+      budget: req.body.budget || null,
+        created_at: new Date(),  
+  updated_at: new Date(),   
+    };
+
+    const lead = await createLead(data);
+    res.status(201).json(lead);
+  } catch (err) {
+    console.error("CREATE LEAD ERROR:", err);
+    res.status(400).json({
+      message: "Failed to create lead",
+      error: err.message
+    });
+  }
 };
+
 
 export const deleteLeadController = async (req, res) => {
   await deleteLead(req.params.id);
@@ -40,9 +84,42 @@ export const deleteLeadController = async (req, res) => {
 };
 
 export const updateLeadController = async (req, res) => {
-  await updateLead(req.params.id, req.body);
-  res.json({ message: "Lead updated" });
+  try {
+    const { id, created_at, updated_at, ...data } = req.body;
+
+    // Validate date
+    let eventDate = null;
+    if (data.event_date) {
+      const parsedDate = new Date(data.event_date);
+      if (!isNaN(parsedDate.getTime())) {
+        eventDate = parsedDate;
+      } else {
+        return res.status(400).json({ message: "Invalid event_date" });
+      }
+    }
+
+    const safeData = {
+      ...data,
+      event_date: eventDate,  // ✅ only valid Date objects or null
+      slot: data.slot || null,
+      menu: data.menu || null,
+      no_guest: data.no_guest === "" ? null : data.no_guest,
+       updated_at: new Date(),
+    };
+
+    await updateLead(req.params.id, safeData);
+
+    res.json({ message: "Lead updated" });
+  } catch (err) {
+    console.error("UPDATE LEAD ERROR:", err);
+    res.status(400).json({
+      message: "Failed to update lead",
+      error: err.message,
+    });
+  }
 };
+
+
 
 //* RM NOTES
 export const addRMNoteController = async (req, res) => {
@@ -88,4 +165,3 @@ export const deleteLeadEventController = async (req, res) => {
   await deleteLeadEvent(req.params.eventId);
   res.json({ message: "Event deleted" });
 };
-

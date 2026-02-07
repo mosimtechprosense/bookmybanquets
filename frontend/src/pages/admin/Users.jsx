@@ -2,12 +2,9 @@ import { useEffect, useState } from "react"
 import { getUsers, deleteUser, adminResetPassword } from "../../api/admin/adminApi.js"
 import { FaEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
-
-
-
 import DataTable from "../../components/admin/tables/DataTable"
-import UserFormModal from "./UserFormModal"
-import ResetPasswordModal from "./ResetPasswordModal"
+import UserFormModal from "../../components/admin/users/UserFormModal.jsx"
+import ResetPasswordModal from "../../components/admin/users/ResetPasswordModal.jsx"
 
 export default function Users() {
   const [users, setUsers] = useState([])

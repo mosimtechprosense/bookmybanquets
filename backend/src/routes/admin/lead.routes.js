@@ -11,7 +11,8 @@ import {
   deleteLeadEventController,
   updateRMNoteController,
   deleteRMNoteController,
-  updateLeadEventController
+  updateLeadEventController,
+  deleteLeadController
 } from "../../controllers/admin/lead.controller.js";
 
 import { auth } from "../../middlewares/admin/auth.middleware.js";
@@ -24,7 +25,7 @@ router.get("/", listLeadsController);
 router.post("/", createLeadController);
 router.get("/:id", getLeadController);
 router.put("/:id", updateLeadController);
-router.delete("/:id", deleteLeadEventController);
+router.delete("/:id", deleteLeadController);
 
 
 //* RM NOTES

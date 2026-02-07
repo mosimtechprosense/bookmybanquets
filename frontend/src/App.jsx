@@ -49,6 +49,8 @@ function App() {
           <ScrollToTop />
           <ConditionalAdminUI>
           <Routes>
+            <Route path="/admin/*" element={<AdminRoutes />} />
+
             <Route path="/" element={<Home />} />
             <Route path="/services" element={<Services />} />
             <Route path="/about" element={<About />} />
@@ -59,10 +61,10 @@ function App() {
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
+            
 <Route path="/venues/:categorySlug" element={<ListingsPage />} />
 <Route path="/:serviceSlug-in/:placeSlug" element={<ListingsPage />} />
 <Route path="/:serviceSlug-in/:localitySlug/:id" element={<ListingDetailsDynamic />} />
-            <Route path="/admin/*" element={<AdminRoutes />} />
           </Routes>
           </ConditionalAdminUI>
         </UIProvider>

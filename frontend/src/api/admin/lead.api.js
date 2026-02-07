@@ -1,25 +1,34 @@
-import axios from "axios";
+import adminApi from "./adminApi";
 
-// leads
-export const fetchLeads = () =>
-  axios.get("/admin/leads");
+/* ================= LEADS ================= */
+
+export const fetchLeads = ({ page, limit, search }) =>
+  adminApi.get("/leads", {
+    params: { page, limit, search }
+  });
 
 export const fetchLeadById = (id) =>
-  axios.get(`/admin/leads/${id}`);
+  adminApi.get(`/leads/${id}`);
+
+export const createLead = (data) =>
+  adminApi.post("/leads", data);
+
 
 export const updateLead = (id, data) =>
-  axios.put(`/admin/leads/${id}`, data);
+  adminApi.put(`/leads/${id}`, data);
 
-// rm notes
+/* ================= RM NOTES ================= */
+
 export const fetchRMNotes = (id) =>
-  axios.get(`/admin/leads/${id}/rm-notes`);
+  adminApi.get(`/leads/${id}/rm-notes`);
 
 export const addRMNote = (id, note) =>
-  axios.post(`/admin/leads/${id}/rm-notes`, { note });
+  adminApi.post(`/leads/${id}/rm-notes`, { note });
 
-// events
+/* ================= EVENTS ================= */
+
 export const fetchLeadEvents = (id) =>
-  axios.get(`/admin/leads/${id}/events`);
+  adminApi.get(`/leads/${id}/events`);
 
 export const addLeadEvent = (id, data) =>
-  axios.post(`/admin/leads/${id}/events`, data);
+  adminApi.post(`/leads/${id}/events`, data);

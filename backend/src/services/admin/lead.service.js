@@ -28,6 +28,37 @@ export const updateLead = (id, data) =>
     data
   });
 
+  export const getLeadsPaginated = async ({ page, limit, search }) => {
+  const skip = (page - 1) * limit;
+
+  const where = search
+    ? {
+        OR: [
+          { name: { contains: search} },
+          { phone: { contains: search } }
+        ]
+      }
+    : {};
+
+  const [data, total] = await Promise.all([
+    prisma.banquet_inquiries.findMany({
+      where,
+      orderBy: { created_at: "desc" },
+      skip,
+      take: limit
+    }),
+    prisma.banquet_inquiries.count({ where })
+  ]);
+
+  return {
+    data,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit)
+  };
+};
+
+
 //* RM NOTES
 export const addRMNote = (leadId, userId, note) =>
   prisma.lead_rm_notes.create({

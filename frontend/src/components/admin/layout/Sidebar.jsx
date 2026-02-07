@@ -1,30 +1,45 @@
-import { NavLink, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import {
+  FaTachometerAlt,
+  FaUsers,
+  FaTasks,
+  FaList,
+  FaChevronDown
+} from "react-icons/fa";
 
 const menu = [
-  { name: "Dashboard", path: "/admin/dashboard" },
-
+  { name: "Dashboard", path: "/admin/dashboard", icon: <FaTachometerAlt /> },
   {
     name: "User Management",
+    icon: <FaUsers />,
     children: [
       { name: "Users", path: "/admin/users" },
-      { name: "Permissions", path: "/admin/permissions" },
-    ],
+      { name: "Permissions", path: "/admin/permissions" }
+    ]
   },
   {
-  name: "Task Management",
-  children: [
-    { name: "Leads", path: "/admin/leads" },
-    { name: "All Tasks", path: "/admin/tasks" }
-  ]
-}
-,
-  { name: "Listings", path: "/admin/listings" },
+    name: "Task Management",
+    icon: <FaTasks />,
+    children: [
+      { name: "Leads", path: "/admin/leads" },
+      { name: "All Tasks", path: "/admin/tasks" }
+    ]
+  },
+  { name: "Listings", path: "/admin/listings", icon: <FaList /> }
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ collapsed }) {
   const navigate = useNavigate();
-  const [open, setOpen] = useState(null);
+  const location = useLocation();
+  const [openMenu, setOpenMenu] = useState(null);
+
+  useEffect(() => {
+    const parent = menu.find(m =>
+      m.children?.some(c => location.pathname.startsWith(c.path))
+    );
+    if (parent) setOpenMenu(parent.name);
+  }, [location.pathname]);
 
   const logout = () => {
     localStorage.removeItem("admin_token");
@@ -32,28 +47,63 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 bg-gray-800 text-white flex flex-col justify-between">
+    <aside
+      className={`
+        ${collapsed ? "w-16" : "w-64"}
+        transition-all duration-300
+        bg-gray-800 text-white
+        flex flex-col justify-between
+      `}
+    >
+      {/* Logo */}
       <div>
-        <div className="p-4 font-bold text-xl">Admin Panel</div>
+        <div className="p-4 font-bold text-lg text-center whitespace-nowrap">
+          {!collapsed && "BookMyBanquets"}
+        </div>
 
-        {menu.map((item, idx) => {
+        {/* Menu */}
+        {menu.map(item => {
           if (item.children) {
+            const isOpen = openMenu === item.name;
+
             return (
-              <div key={idx}>
+              <div key={item.name}>
                 <button
-                  onClick={() => setOpen(open === idx ? null : idx)}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-700 flex justify-between cursor-pointer"
+                  onClick={() =>
+                    !collapsed &&
+                    setOpenMenu(isOpen ? null : item.name)
+                  }
+                  className="w-full px-4 py-2 flex items-center justify-between hover:bg-gray-700 cursor-pointer"
                 >
-                  {item.name}
-                  <span>{open === idx ? "▲" : "▼"}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg">{item.icon}</span>
+                    {!collapsed && (
+                      <span className="whitespace-nowrap">
+                        {item.name}
+                      </span>
+                    )}
+                  </div>
+
+                  {!collapsed && (
+                    <FaChevronDown
+                      className={`transition-transform ml-5 ${
+                        isOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  )}
                 </button>
 
-                {open === idx &&
-                  item.children.map((child) => (
+                {/* Children */}
+                {!collapsed && isOpen &&
+                  item.children.map(child => (
                     <NavLink
                       key={child.path}
                       to={child.path}
-                      className="block pl-8 py-2 text-sm hover:bg-gray-700"
+                      className={({ isActive }) =>
+                        `block pl-12 py-2 text-sm hover:bg-gray-700 whitespace-nowrap ${
+                          isActive ? "bg-gray-700" : ""
+                        }`
+                      }
                     >
                       {child.name}
                     </NavLink>
@@ -66,19 +116,25 @@ export default function Sidebar() {
             <NavLink
               key={item.path}
               to={item.path}
-              className="block px-4 py-2 hover:bg-gray-700"
+              className={({ isActive }) =>
+                `px-4 py-2 flex items-center gap-3 hover:bg-gray-700 whitespace-nowrap ${
+                  isActive ? "bg-gray-700" : ""
+                }`
+              }
             >
-              {item.name}
+              <span className="text-lg">{item.icon}</span>
+              {!collapsed && item.name}
             </NavLink>
           );
         })}
       </div>
 
+      {/* Logout */}
       <button
         onClick={logout}
-        className="m-4 px-4 py-2 bg-red-600 rounded hover:bg-red-700 cursor-pointer"
+        className="m-4 px-3 py-2 bg-red-600 rounded hover:bg-red-700 text-sm whitespace-nowrap"
       >
-        Logout
+        {!collapsed ? "Logout" : "⎋"}
       </button>
     </aside>
   );
