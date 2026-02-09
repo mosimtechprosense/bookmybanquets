@@ -1,16 +1,16 @@
-import express from "express";
-import {
+const express = require("express");
+const {
   loginRequestOTP,
   verifyLoginOTPController,
   requestPasswordResetController,
   resetPasswordController,
   loginWithPassword,
-} from "../../controllers/admin/auth.controller.js";
+} = require("../../controllers/admin/auth.controller");
 
 const router = express.Router();
 
 // --- LOGIN FLOW ---
-router.post("/login-password", loginWithPassword);  // NEW: password login
+router.post("/login-password", loginWithPassword); // password login
 router.post("/login", loginRequestOTP);            // Admin OTP request
 router.post("/verify-otp", verifyLoginOTPController);
 
@@ -18,4 +18,4 @@ router.post("/verify-otp", verifyLoginOTPController);
 router.post("/password-reset/request", requestPasswordResetController);
 router.post("/password-reset/verify", resetPasswordController);
 
-export default router;
+module.exports = router;

@@ -1,6 +1,6 @@
-import { transporter } from "../config/email.js"
+const { transporter } = require("../config/email.js");
 
-export const sendOtpEmail = async ({ to, otp, purpose }) => {
+const sendOtpEmail = async ({ to, otp, purpose }) => {
   const subjectMap = {
     ADMIN_LOGIN: "Admin Login OTP",
     PASSWORD_RESET: "Password Reset OTP",
@@ -82,4 +82,8 @@ export const sendOtpEmail = async ({ to, otp, purpose }) => {
       </div>
     `,
   });
+};
+
+module.exports = {
+  sendOtpEmail,
 };

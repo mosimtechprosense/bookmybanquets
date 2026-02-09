@@ -1,10 +1,8 @@
-import { z } from "zod";
-
+const { z } = require("zod");
 
 
 // CREATE LISTING VALIDATION
-
-export const createListingSchema = {
+const createListingSchema = {
   body: z.object({
     title: z.string().min(3, "Title must be at least 3 chars"),
 
@@ -13,7 +11,7 @@ export const createListingSchema = {
     keywords: z.string().optional(),
 
     address: z.string().min(5),
-    
+
     city: z.string().min(2),
     state: z.string(),
     country: z.string(),
@@ -40,15 +38,12 @@ export const createListingSchema = {
     trending: z.boolean().optional(),
     high_demand: z.boolean().optional(),
     status: z.boolean().optional(),
-  })
+  }),
 };
 
 
-
-
 // FILTER LISTINGS (GET /api/listings)
-
-export const filterListingSchema = {
+const filterListingSchema = {
   query: z.object({
     city: z.string().optional(),
     locality: z.string().optional(),
@@ -69,15 +64,20 @@ export const filterListingSchema = {
 
     sortBy: z.enum(["created_at", "min_budget", "max_budget"]).optional(),
     order: z.enum(["asc", "desc"]).optional(),
-  })
+  }),
 };
 
 
-
 // ID PARAM VALIDATION
-
-export const idParamSchema = {
+const idParamSchema = {
   params: z.object({
-    id: z.string().regex(/^\d+$/, "ID must be numeric")
-  })
+    id: z.string().regex(/^\d+$/, "ID must be numeric"),
+  }),
+};
+
+
+module.exports = {
+  createListingSchema,
+  filterListingSchema,
+  idParamSchema,
 };

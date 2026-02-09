@@ -1,14 +1,14 @@
-import {
+const {
   createLocalityContentDB,
   getAllLocalityContentDB,
   getLocalityContentByIdDB,
   getLocalityContentBySlugDB,
   updateLocalityContentDB,
   deleteLocalityContentDB
-} from "../../services/public/localityContent.service.js"
+} = require("../../services/public/localityContent.service.js")
 
 // CREATE
-export const createLocalityContent = async (req, res) => {
+const createLocalityContent = async (req, res) => {
   try {
     const data = await createLocalityContentDB(req.body)
     res.status(201).json({ success: true, data })
@@ -19,30 +19,31 @@ export const createLocalityContent = async (req, res) => {
 }
 
 // READ ALL
-export const getAllLocalityContent = async (req, res) => {
+const getAllLocalityContent = async (req, res) => {
   const data = await getAllLocalityContentDB()
   res.json({ success: true, data })
 }
 
 // READ BY ID
-export const getLocalityContentById = async (req, res) => {
+const getLocalityContentById = async (req, res) => {
   const data = await getLocalityContentByIdDB(req.params.id)
-  if (!data)
+
+  if (!data) {
     return res.status(404).json({ message: "Not found" })
+  }
 
   res.json({ success: true, data })
 }
 
-
-
-
 // READ BY SLUG (SEO)
-export const getLocalitySeoBySlug = async (req, res) => {
+const getLocalitySeoBySlug = async (req, res) => {
   try {
     const data = await getLocalityContentBySlugDB(req.params.slug)
 
     if (!data) {
-      return res.status(404).json({ success: false, message: "Locality not found" })
+      return res
+        .status(404)
+        .json({ success: false, message: "Locality not found" })
     }
 
     res.json({ success: true, data })
@@ -52,10 +53,8 @@ export const getLocalitySeoBySlug = async (req, res) => {
   }
 }
 
-
-
 // UPDATE
-export const updateLocalityContent = async (req, res) => {
+const updateLocalityContent = async (req, res) => {
   const data = await updateLocalityContentDB(
     req.params.id,
     req.body
@@ -65,7 +64,16 @@ export const updateLocalityContent = async (req, res) => {
 }
 
 // DELETE
-export const deleteLocalityContent = async (req, res) => {
+const deleteLocalityContent = async (req, res) => {
   await deleteLocalityContentDB(req.params.id)
   res.json({ success: true, message: "Deleted successfully" })
+}
+
+module.exports = {
+  createLocalityContent,
+  getAllLocalityContent,
+  getLocalityContentById,
+  getLocalitySeoBySlug,
+  updateLocalityContent,
+  deleteLocalityContent
 }

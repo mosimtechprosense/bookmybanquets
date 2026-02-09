@@ -1,40 +1,41 @@
-import { PrismaClient } from "@prisma/client";
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+
 //* LEADS
-export const getLeads = () =>
+const getLeads = () =>
   prisma.banquet_inquiries.findMany({
     orderBy: { created_at: "desc" }
   });
 
-export const getLeadById = (id) =>
+const getLeadById = (id) =>
   prisma.banquet_inquiries.findUnique({
     where: { id: BigInt(id) }
   });
 
-export const createLead = (data) =>
+const createLead = (data) =>
   prisma.banquet_inquiries.create({
     data
   });
 
-export const deleteLead = (id) =>
+const deleteLead = (id) =>
   prisma.banquet_inquiries.delete({
     where: { id: BigInt(id) }
   });
 
-export const updateLead = (id, data) =>
+const updateLead = (id, data) =>
   prisma.banquet_inquiries.update({
     where: { id: BigInt(id) },
     data
   });
 
-  export const getLeadsPaginated = async ({ page, limit, search }) => {
+const getLeadsPaginated = async ({ page, limit, search }) => {
   const skip = (page - 1) * limit;
 
   const where = search
     ? {
         OR: [
-          { name: { contains: search} },
+          { name: { contains: search } },
           { phone: { contains: search } }
         ]
       }
@@ -60,7 +61,7 @@ export const updateLead = (id, data) =>
 
 
 //* RM NOTES
-export const addRMNote = (leadId, userId, note) =>
+const addRMNote = (leadId, userId, note) =>
   prisma.lead_rm_notes.create({
     data: {
       banquet_inquiry_id: BigInt(leadId),
@@ -69,27 +70,26 @@ export const addRMNote = (leadId, userId, note) =>
     }
   });
 
-export const getRMNotes = (leadId) =>
+const getRMNotes = (leadId) =>
   prisma.lead_rm_notes.findMany({
     where: { banquet_inquiry_id: BigInt(leadId) },
     orderBy: { created_at: "desc" }
   });
 
-  export const updateRMNote = (noteId, note) =>
+const updateRMNote = (noteId, note) =>
   prisma.lead_rm_notes.update({
     where: { id: BigInt(noteId) },
     data: { note }
   });
 
-  export const deleteRMNote = (noteId) =>
+const deleteRMNote = (noteId) =>
   prisma.lead_rm_notes.delete({
     where: { id: BigInt(noteId) }
   });
 
 
-
 //* EVENTS
-export const addLeadEvent = (leadId, data, userId) =>
+const addLeadEvent = (leadId, data, userId) =>
   prisma.lead_events.create({
     data: {
       banquet_inquiry_id: BigInt(leadId),
@@ -100,14 +100,13 @@ export const addLeadEvent = (leadId, data, userId) =>
     }
   });
 
-export const getLeadEvents = (leadId) =>
+const getLeadEvents = (leadId) =>
   prisma.lead_events.findMany({
     where: { banquet_inquiry_id: BigInt(leadId) },
     orderBy: { created_at: "desc" }
   });
 
-
-  export const updateLeadEvent = (eventId, data) =>
+const updateLeadEvent = (eventId, data) =>
   prisma.lead_events.update({
     where: { id: BigInt(eventId) },
     data: {
@@ -117,8 +116,25 @@ export const getLeadEvents = (leadId) =>
     }
   });
 
-
-  export const deleteLeadEvent = (eventId) =>
+const deleteLeadEvent = (eventId) =>
   prisma.lead_events.delete({
     where: { id: BigInt(eventId) }
   });
+
+
+module.exports = {
+  getLeads,
+  getLeadById,
+  createLead,
+  deleteLead,
+  updateLead,
+  getLeadsPaginated,
+  addRMNote,
+  getRMNotes,
+  updateRMNote,
+  deleteRMNote,
+  addLeadEvent,
+  getLeadEvents,
+  updateLeadEvent,
+  deleteLeadEvent
+};

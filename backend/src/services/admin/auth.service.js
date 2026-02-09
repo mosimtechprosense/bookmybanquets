@@ -1,7 +1,7 @@
-import { PrismaClient } from "@prisma/client";
-import crypto from "crypto";
-import bcrypt from "bcrypt";
-import { sendOtpEmail } from "../../utils/sendOtpEmail.js";
+const { PrismaClient } = require("@prisma/client");
+const crypto = require("crypto");
+const bcrypt = require("bcrypt");
+const { sendOtpEmail } = require("../../utils/sendOtpEmail.js");
 
 const prisma = new PrismaClient();
 const SALT_ROUNDS = 10;
@@ -13,7 +13,7 @@ const otpExpiry = () => {
   const expiry = new Date();
   expiry.setMinutes(expiry.getMinutes() + 10); // 10 min
   return expiry;
-};  
+};
 
 // --- Email placeholder ---
 const sendOTPEmail = async (email, otp, purpose) => {
@@ -21,12 +21,12 @@ const sendOTPEmail = async (email, otp, purpose) => {
     to: email,
     otp,
     purpose,
-  }); 
+  });
 };
 
 
 // --- REGISTER OTP (REUSABLE) ---
-export const requestOTP = async (email, purpose) => {
+const requestOTP = async (email, purpose) => {
   const user = await prisma.admins.findUnique({ where: { email } });
   if (!user) throw new Error("User not found");
 
@@ -47,12 +47,11 @@ export const requestOTP = async (email, purpose) => {
 
 
 // --- LOGIN OTP ---
-export const requestLoginOTP = (email) =>
+const requestLoginOTP = (email) =>
   requestOTP(email, "ADMIN_LOGIN");
 
 
-
-export const verifyLoginOTP = async (email, otp) => {
+const verifyLoginOTP = async (email, otp) => {
   const user = await prisma.admins.findUnique({ where: { email } });
   if (!user) throw new Error("User not found");
 
@@ -81,13 +80,13 @@ export const verifyLoginOTP = async (email, otp) => {
   return user;
 };
 
+
 // --- PASSWORD RESET FLOW ---
-export const requestPasswordReset = (email) =>
+const requestPasswordReset = (email) =>
   requestOTP(email, "PASSWORD_RESET");
 
 
-
-export const verifyPasswordResetOTP = async (email, otp) => {
+const verifyPasswordResetOTP = async (email, otp) => {
   const user = await prisma.admins.findUnique({ where: { email } });
   if (!user) throw new Error("User not found");
 
@@ -113,7 +112,8 @@ export const verifyPasswordResetOTP = async (email, otp) => {
   return user;
 };
 
-export const resetPassword = async (email, otp, newPassword) => {
+
+const resetPassword = async (email, otp, newPassword) => {
   const user = await verifyPasswordResetOTP(email, otp);
 
   const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
@@ -124,4 +124,14 @@ export const resetPassword = async (email, otp, newPassword) => {
   });
 
   return true;
+};
+
+
+module.exports = {
+  requestOTP,
+  requestLoginOTP,
+  verifyLoginOTP,
+  requestPasswordReset,
+  verifyPasswordResetOTP,
+  resetPassword,
 };

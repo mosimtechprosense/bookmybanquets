@@ -1,8 +1,8 @@
-import prisma from "../../config/db.js"
-import slugify from "slugify"
-import { mapFoodPrices } from "../../utils/foodPriceMapper.js"
+const prisma = require("../../config/db.js")
+const slugify = require("slugify")
+const { mapFoodPrices } = require("../../utils/foodPriceMapper.js")
 
-// venue images url builder fuction
+// venue images url builder function
 const BASE_URL = process.env.BASE_URL || "http://localhost:5000"
 
 const normalize = (value) => {
@@ -19,8 +19,8 @@ const formatImages = (venue_images = []) => {
   }))
 }
 
-//todo: CREATE — Add new listing
-export const createListingDB = async (data) => {
+// CREATE — Add new listing
+const createListingDB = async (data) => {
   const slug = slugify(data.title, { lower: true }) + "-" + Date.now()
 
   const excerpt = data.description
@@ -33,30 +33,28 @@ export const createListingDB = async (data) => {
       slug,
       excerpt
     },
-    include: { 
-    venue_images: true,
-    listing_food_categories: true
-   }
+    include: {
+      venue_images: true,
+      listing_food_categories: true
+    }
   })
 
-const { vegPrice, nonVegPrice } = mapFoodPrices(
-  listing.listing_food_categories
-)
+  const { vegPrice, nonVegPrice } = mapFoodPrices(
+    listing.listing_food_categories
+  )
 
-return {
-  ...listing,
-  vegPrice,
-  nonVegPrice,
-  venue_images: formatImages(listing.venue_images)
+  return {
+    ...listing,
+    vegPrice,
+    nonVegPrice,
+    venue_images: formatImages(listing.venue_images)
+  }
 }
-}
-
-
 
 const getCityVariants = (city) => {
-  if (!city) return [];
+  if (!city) return []
 
-  const normalized = city.toLowerCase();
+  const normalized = city.toLowerCase()
 
   const cityMap = {
     delhi: [
@@ -77,15 +75,13 @@ const getCityVariants = (city) => {
     ],
     gurgaon: ["gurgaon", "gurugram"],
     gurugram: ["gurgaon", "gurugram"]
-  };
+  }
 
-  return cityMap[normalized] || [normalized];
-};
+  return cityMap[normalized] || [normalized]
+}
 
-
-
-//* READ — Get all listings (with filters)
-export const getAllListingDB = async (filters = {}, skip = 0, take = 999) => {
+// READ — Get all listings (with filters)
+const getAllListingDB = async (filters = {}, skip = 0, take = 999) => {
   const {
     mealType,
     city,
@@ -103,21 +99,15 @@ export const getAllListingDB = async (filters = {}, skip = 0, take = 999) => {
     order = "desc"
   } = filters
 
-
-  // Normalize boolean filters from query params
   const recommendedBool = recommended === "true" || recommended === true
   const highDemandBool = highDemand === "true" || highDemand === true
-  const normalizedCity = normalize(city)
+
   const normalizedLocality = normalize(locality)
-  const cityVariants = getCityVariants(city);
-
-
-
+  const cityVariants = getCityVariants(city)
 
   const where = {
     status: true,
 
-    // Search across multiple fields
     ...(search
       ? {
           OR: [
@@ -129,42 +119,28 @@ export const getAllListingDB = async (filters = {}, skip = 0, take = 999) => {
         }
       : {}),
 
-    // listing keywords
-...(category
-  ? {
-      listing_categories: {
-        some: {
-          listing_category_id: Number(category)
-        }
-      }
-    }
-  : {}),
-
-  
-
-    // City / Locality filters
-...(cityVariants.length
-  ? {
-      OR: cityVariants.map((c) => ({
-        city: {
-          contains: c,
-        }
-      }))
-    }
-  : {}),
-
-
-    ...(locality
+    ...(category
       ? {
-          locality: {
-            contains: String(normalizedLocality)
+          listing_categories: {
+            some: { listing_category_id: Number(category) }
           }
         }
       : {}),
 
+    ...(cityVariants.length
+      ? {
+          OR: cityVariants.map((c) => ({
+            city: { contains: c }
+          }))
+        }
+      : {}),
 
+    ...(locality
+      ? {
+          locality: { contains: String(normalizedLocality) }
+        }
+      : {}),
 
-        // Guest range filters
     ...(minGuests || maxGuests
       ? {
           AND: [
@@ -174,7 +150,6 @@ export const getAllListingDB = async (filters = {}, skip = 0, take = 999) => {
         }
       : {}),
 
-    // Budget range filters
     ...(minBudget || maxBudget
       ? {
           AND: [
@@ -184,7 +159,6 @@ export const getAllListingDB = async (filters = {}, skip = 0, take = 999) => {
         }
       : {}),
 
-    // Venue Type (keywords or description)
     ...(venueType
       ? {
           OR: [
@@ -195,47 +169,33 @@ export const getAllListingDB = async (filters = {}, skip = 0, take = 999) => {
         }
       : {}),
 
-    // Meal Type filters
-...(mealType === "veg"
-  ? {
-      listing_food_categories: {
-        none: { food_category_id: 2 }
-      }
-    }
-  : {}),
+    ...(mealType === "veg"
+      ? {
+          listing_food_categories: {
+            none: { food_category_id: 2 }
+          }
+        }
+      : {}),
 
-...(mealType === "nonVeg"
-  ? {
-      listing_food_categories: {
-        some: { food_category_id: 2 }
-      }
-    }
-  : {}),
+    ...(mealType === "nonVeg"
+      ? {
+          listing_food_categories: {
+            some: { food_category_id: 2 }
+          }
+        }
+      : {}),
 
-
-    // Recommended / High demand
     ...(recommendedBool ? { recommended: true } : {}),
     ...(highDemandBool ? { high_demand: true } : {})
   }
 
-  // Validate sortBy field to match Prisma columns
-  const validSortFields = [
-    "created_at",
-    "min_budget",
-    "max_budget",
-    "guests",
-    "recommended",
-    "high_demand"
-  ]
+  const orderBy =
+    sortBy === "min_budget" ||
+    sortBy === "max_budget" ||
+    sortBy === "created_at"
+      ? { [sortBy]: order === "asc" ? "asc" : "desc" }
+      : { created_at: "desc" }
 
-  // Use default if invalid
-const orderBy =
-  sortBy === "min_budget" || sortBy === "max_budget" || sortBy === "created_at"
-    ? { [sortBy]: order === "asc" ? "asc" : "desc" }
-    : { created_at: "desc" }
-
-
-  // Fetch paginated listings
   const listings = await prisma.listings.findMany({
     where,
     skip: Number(skip),
@@ -247,41 +207,38 @@ const orderBy =
     }
   })
 
-  // Count total for pagination
-const totalCount = await prisma.listings.count({ where })
+  const totalCount = await prisma.listings.count({ where })
 
-const updatedListings = listings.map((listing) => {
-  const { vegPrice, nonVegPrice } = mapFoodPrices(
-    listing.listing_food_categories
-  )
+  const updatedListings = listings.map((listing) => {
+    const { vegPrice, nonVegPrice } = mapFoodPrices(
+      listing.listing_food_categories
+    )
 
-  
-  return {
-    ...listing,
-    vegPrice,
-    nonVegPrice,
-    venue_images: formatImages(listing.venue_images)
-  }
-})
+    return {
+      ...listing,
+      vegPrice,
+      nonVegPrice,
+      venue_images: formatImages(listing.venue_images)
+    }
+  })
 
-return { listings: updatedListings, totalCount }
+  return { listings: updatedListings, totalCount }
 }
 
-//* READ — Get single listing by ID
-export const getListingByIdDB = async (id) => {
-const listing = await prisma.listings.findUnique({
-  where: { id: BigInt(id) },
-  include: { 
-    venue_images: true,
-    hall_capacities: true,
-    listing_food_categories: true,
-    faqs: {
-      where: { isActive: true },
-      orderBy: { order: "asc" }
+// READ — Get single listing by ID
+const getListingByIdDB = async (id) => {
+  const listing = await prisma.listings.findUnique({
+    where: { id: BigInt(id) },
+    include: {
+      venue_images: true,
+      hall_capacities: true,
+      listing_food_categories: true,
+      faqs: {
+        where: { isActive: true },
+        orderBy: { order: "asc" }
+      }
     }
-  }
-})
-
+  })
 
   if (!listing) return null
 
@@ -297,40 +254,30 @@ const listing = await prisma.listings.findUnique({
   }
 }
 
-
-
-
-//* READ — Get similar listing
-export const getSimilarListingsDB = async (id) => {
-  // Convert ONCE
-  let listingId;
+// READ — Get similar listing
+const getSimilarListingsDB = async (id) => {
+  let listingId
   try {
-    listingId = BigInt(id);
+    listingId = BigInt(id)
   } catch {
-    console.error("Invalid listing ID:", id);
-    return [];
+    console.error("Invalid listing ID:", id)
+    return []
   }
 
-  // Pass ORIGINAL id, not BigInt
-  const currentListing = await getListingByIdDB(id);
-  if (!currentListing) return [];
+  const currentListing = await getListingByIdDB(id)
+  if (!currentListing) return []
 
   const { listings } = await getAllListingDB(
     { city: currentListing.city },
     0,
     8
-  );
+  )
 
-  return listings.filter(
-    (listing) => listing.id !== listingId
-  );
-};
+  return listings.filter((listing) => listing.id !== listingId)
+}
 
-
-
-
-//? UPDATE — Modify listing
-export const updateListingDB = async (id, data) => {
+// UPDATE — Modify listing
+const updateListingDB = async (id, data) => {
   const listing = await prisma.listings.update({
     where: { id: BigInt(id) },
     data,
@@ -352,10 +299,8 @@ export const updateListingDB = async (id, data) => {
   }
 }
 
-
-
-//! DELETE — Soft delete (set status = false)
-export const deleteListingDB = async (id) => {
+// DELETE — Soft delete
+const deleteListingDB = async (id) => {
   const listing = await prisma.listings.update({
     where: { id: BigInt(id) },
     data: { status: false },
@@ -368,27 +313,37 @@ export const deleteListingDB = async (id) => {
   }
 }
 
-//* RECOMMENDED LISTINGS — For homepage section
-export const getRecommendedListingsDB = async (limit, city, locality) => {
+// RECOMMENDED LISTINGS
+const getRecommendedListingsDB = async (limit, city, locality) => {
   const filters = {
     recommended: true,
-    status: true,
     ...(city ? { city } : {}),
     ...(locality ? { locality } : {})
-  };
+  }
 
-  const { listings } = await getAllListingDB(filters, 0, limit);
-  return listings;
-};
+  const { listings } = await getAllListingDB(filters, 0, limit)
+  return listings
+}
 
-
-//* HIGH DEMAND LISTINGS — For homepage section
-export const getHighDemandListingsDB = async (limit = 10, city, locality) => {
+// HIGH DEMAND LISTINGS
+const getHighDemandListingsDB = async (limit = 10, city, locality) => {
   const filters = {
     highDemand: true,
     ...(city ? { city } : {}),
     ...(locality ? { locality } : {})
   }
+
   const { listings } = await getAllListingDB(filters, 0, limit)
   return listings
+}
+
+module.exports = {
+  createListingDB,
+  getAllListingDB,
+  getListingByIdDB,
+  getSimilarListingsDB,
+  updateListingDB,
+  deleteListingDB,
+  getRecommendedListingsDB,
+  getHighDemandListingsDB
 }

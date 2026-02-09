@@ -1,4 +1,4 @@
-import {
+const {
   getLeads,
   getLeadById,
   updateLead,
@@ -12,32 +12,28 @@ import {
   deleteLeadEvent,
   createLead,
   deleteLead,
-  getLeadsPaginated
-} from "../../services/admin/lead.service.js";
-
+  getLeadsPaginated,
+} = require("../../services/admin/lead.service");
 
 //* LEADS
-export const listLeadsController = async (req, res) => {
+const listLeadsController = async (req, res) => {
   const page = Number(req.query.page || 1);
   const limit = Number(req.query.limit || 10);
   const search = req.query.search || "";
 
   const result = await getLeadsPaginated({ page, limit, search });
-
   res.json(result);
 };
 
-export const getLeadController = async (req, res) => {
+const getLeadController = async (req, res) => {
   const lead = await getLeadById(req.params.id);
   if (!lead) {
-    
-    
     return res.status(404).json({ message: "Lead not found" });
   }
   res.json(lead);
 };
 
-export const createLeadController = async (req, res) => {
+const createLeadController = async (req, res) => {
   try {
     // Validate and parse event_date
     let eventDate = null;
@@ -57,13 +53,13 @@ export const createLeadController = async (req, res) => {
       preferred_location: req.body.preferred_location || null,
       source: req.body.source || null,
       no_guest: req.body.no_guest || null,
-      event_date: eventDate, //
+      event_date: eventDate,
       slot: req.body.slot || null,
       menu: req.body.menu || null,
       event_type: req.body.event_type || null,
       budget: req.body.budget || null,
-        created_at: new Date(),  
-  updated_at: new Date(),   
+      created_at: new Date(),
+      updated_at: new Date(),
     };
 
     const lead = await createLead(data);
@@ -72,18 +68,17 @@ export const createLeadController = async (req, res) => {
     console.error("CREATE LEAD ERROR:", err);
     res.status(400).json({
       message: "Failed to create lead",
-      error: err.message
+      error: err.message,
     });
   }
 };
 
-
-export const deleteLeadController = async (req, res) => {
+const deleteLeadController = async (req, res) => {
   await deleteLead(req.params.id);
   res.json({ message: "Lead deleted" });
 };
 
-export const updateLeadController = async (req, res) => {
+const updateLeadController = async (req, res) => {
   try {
     const { id, created_at, updated_at, ...data } = req.body;
 
@@ -100,15 +95,14 @@ export const updateLeadController = async (req, res) => {
 
     const safeData = {
       ...data,
-      event_date: eventDate,  // ✅ only valid Date objects or null
+      event_date: eventDate,
       slot: data.slot || null,
       menu: data.menu || null,
       no_guest: data.no_guest === "" ? null : data.no_guest,
-       updated_at: new Date(),
+      updated_at: new Date(),
     };
 
     await updateLead(req.params.id, safeData);
-
     res.json({ message: "Lead updated" });
   } catch (err) {
     console.error("UPDATE LEAD ERROR:", err);
@@ -119,49 +113,60 @@ export const updateLeadController = async (req, res) => {
   }
 };
 
-
-
 //* RM NOTES
-export const addRMNoteController = async (req, res) => {
+const addRMNoteController = async (req, res) => {
   await addRMNote(req.params.id, req.user.id, req.body.note);
   res.json({ message: "RM Note added" });
 };
 
-export const getRMNotesController = async (req, res) => {
+const getRMNotesController = async (req, res) => {
   const notes = await getRMNotes(req.params.id);
   res.json(notes);
 };
 
-export const updateRMNoteController = async (req, res) => {
+const updateRMNoteController = async (req, res) => {
   await updateRMNote(req.params.noteId, req.body.note);
   res.json({ message: "RM Note updated" });
 };
 
-export const deleteRMNoteController = async (req, res) => {
+const deleteRMNoteController = async (req, res) => {
   await deleteRMNote(req.params.noteId);
   res.json({ message: "RM Note deleted" });
 };
 
-
 //* EVENTS
-export const addLeadEventController = async (req, res) => {
+const addLeadEventController = async (req, res) => {
   await addLeadEvent(req.params.id, req.body, req.user.id);
   res.json({ message: "Event added" });
 };
 
-export const getLeadEventsController = async (req, res) => {
+const getLeadEventsController = async (req, res) => {
   const events = await getLeadEvents(req.params.id);
   res.json(events);
 };
 
-
-export const updateLeadEventController = async (req, res) => {
+const updateLeadEventController = async (req, res) => {
   await updateLeadEvent(req.params.eventId, req.body);
   res.json({ message: "Event updated" });
 };
 
-
-export const deleteLeadEventController = async (req, res) => {
+const deleteLeadEventController = async (req, res) => {
   await deleteLeadEvent(req.params.eventId);
   res.json({ message: "Event deleted" });
+};
+
+module.exports = {
+  listLeadsController,
+  getLeadController,
+  createLeadController,
+  updateLeadController,
+  deleteLeadController,
+  addRMNoteController,
+  getRMNotesController,
+  updateRMNoteController,
+  deleteRMNoteController,
+  addLeadEventController,
+  getLeadEventsController,
+  updateLeadEventController,
+  deleteLeadEventController,
 };

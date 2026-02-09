@@ -1,4 +1,4 @@
-export const getDashboardStats = async (req, res, next) => {
+const getDashboardStats = async (req, res, next) => {
   try {
     res.json({
       success: true,
@@ -12,3 +12,5 @@ export const getDashboardStats = async (req, res, next) => {
     next(err);
   }
 };
+
+module.exports = { getDashboardStats };

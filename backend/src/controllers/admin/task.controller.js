@@ -1,11 +1,12 @@
-import {
+const {
   assignTask,
   listTasksByRole,
   getTaskById,
-  submitTaskReport
-} from "../../services/admin/task.service.js";
+  submitTaskReport,
+} = require("../../services/admin/task.service");
 
-export const assignTaskController = async (req, res) => {
+// assign task
+const assignTaskController = async (req, res) => {
   try {
     const task = await assignTask(req.body);
     res.json({ message: "Task assigned", task });
@@ -14,7 +15,8 @@ export const assignTaskController = async (req, res) => {
   }
 };
 
-export const listTasksController = async (req, res) => {
+// list tasks (role-based)
+const listTasksController = async (req, res) => {
   try {
     const tasks = await listTasksByRole(req.user);
     res.json(tasks);
@@ -23,12 +25,21 @@ export const listTasksController = async (req, res) => {
   }
 };
 
-export const getTaskByIdController = async (req, res) => {
+// task detail
+const getTaskByIdController = async (req, res) => {
   const task = await getTaskById(req.params.id);
   res.json(task);
 };
 
-export const submitTaskReportController = async (req, res) => {
+// submit report
+const submitTaskReportController = async (req, res) => {
   await submitTaskReport(req.params.id, req.body);
   res.json({ message: "Report submitted" });
+};
+
+module.exports = {
+  assignTaskController,
+  listTasksController,
+  getTaskByIdController,
+  submitTaskReportController,
 };

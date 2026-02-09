@@ -1,4 +1,4 @@
-export const mapFoodPrices = (foodCategories = []) => {
+const mapFoodPrices = (foodCategories = []) => {
   let vegPrice = null
   let nonVegPrice = null
 
@@ -13,4 +13,8 @@ export const mapFoodPrices = (foodCategories = []) => {
   }
 
   return { vegPrice, nonVegPrice }
+}
+
+module.exports = {
+  mapFoodPrices
 }

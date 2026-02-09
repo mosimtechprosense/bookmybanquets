@@ -1,7 +1,7 @@
-import express from "express";
-import { auth } from "../../middlewares/admin/auth.middleware.js";
-import { allowRoles } from "../../middlewares/admin/user.middleware.js";
-import { getDashboardStats } from "../../controllers/admin/dashboard.controller.js";
+const express = require("express");
+const { auth } = require("../../middlewares/admin/auth.middleware");
+const { allowRoles } = require("../../middlewares/admin/user.middleware");
+const { getDashboardStats } = require("../../controllers/admin/dashboard.controller");
 
 const router = express.Router();
 
@@ -12,4 +12,4 @@ router.get(
   getDashboardStats
 );
 
-export default router;
+module.exports = router;

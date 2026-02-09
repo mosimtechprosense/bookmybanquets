@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+const { PrismaClient } = require("@prisma/client")
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 async function seedLocations() {
   const locations = [
@@ -13,33 +13,41 @@ async function seedLocations() {
     { location: "Loha Mandi", city: "Delhi" },
     { location: "Janakpuri", city: "Delhi" },
     { location: "Dwarka", city: "Delhi" }
-  ];
+  ]
 
   for (const loc of locations) {
     const city = await prisma.city.upsert({
       where: { name: loc.city },
       update: {},
       create: { name: loc.city },
-    });
+    })
 
     await prisma.location.upsert({
-      where: { name_cityId: { name: loc.location, cityId: city.id } },
+      where: {
+        name_cityId: {
+          name: loc.location,
+          cityId: city.id,
+        },
+      },
       update: {},
-      create: { name: loc.location, cityId: city.id },
-    });
+      create: {
+        name: loc.location,
+        cityId: city.id,
+      },
+    })
   }
 
-  console.log("✔️ Locations seeded");
+  console.log("✔️ Locations seeded")
 }
 
 async function seedListings() {
   const motiNagar = await prisma.location.findFirst({
-    where: { name: "Moti Nagar" }
-  });
+    where: { name: "Moti Nagar" },
+  })
 
   if (!motiNagar) {
-    console.log("⚠️ Cannot seed listings — Moti Nagar not found");
-    return;
+    console.log("⚠️ Cannot seed listings — Moti Nagar not found")
+    return
   }
 
   await prisma.listing.createMany({
@@ -67,18 +75,20 @@ async function seedListings() {
         minBudget: 600,
         maxBudget: 1500,
         created_at: new Date(),
-      }
-    ]
-  });
+      },
+    ],
+  })
 
-  console.log("✔️ Listings seeded");
+  console.log("✔️ Listings seeded")
 }
 
 async function main() {
-  await seedLocations();
-  await seedListings();
+  await seedLocations()
+  await seedListings()
 }
 
 main()
   .catch(console.error)
-  .finally(async () => prisma.$disconnect());
+  .finally(async () => {
+    await prisma.$disconnect()
+  })

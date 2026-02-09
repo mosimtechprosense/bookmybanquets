@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client"
+const { PrismaClient } = require("@prisma/client")
 
 const prisma = new PrismaClient()
 
@@ -51,18 +51,29 @@ async function main() {
     const city = await prisma.city.upsert({
       where: { name: loc.city },
       update: {},
-      create: { name: loc.city }
+      create: { name: loc.city },
     })
 
     await prisma.location.upsert({
-      where: { name_cityId: { name: loc.location, cityId: city.id } },
+      where: {
+        name_cityId: {
+          name: loc.location,
+          cityId: city.id,
+        },
+      },
       update: {},
-      create: { name: loc.location, cityId: city.id }
+      create: {
+        name: loc.location,
+        cityId: city.id,
+      },
     })
   }
+
   console.log("Locations seeded successfully!")
 }
 
 main()
   .catch((e) => console.error(e))
-  .finally(async () => await prisma.$disconnect());
+  .finally(async () => {
+    await prisma.$disconnect()
+  })

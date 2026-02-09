@@ -1,6 +1,6 @@
-import { verifyToken } from "../../utils/jwt.js";
+const { verifyToken } = require("../../utils/jwt");
 
-export const auth = (req, res, next) => {
+const auth = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -18,3 +18,4 @@ export const auth = (req, res, next) => {
   }
 };
 
+module.exports = { auth };

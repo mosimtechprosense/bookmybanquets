@@ -1,7 +1,10 @@
-import { Router } from "express";
-import { getAllLocations, createLocation, updateLocation, deleteLocation } from "../../controllers/public/location.controller.js";
-
-
+const { Router } = require("express");
+const {
+  getAllLocations,
+  createLocation,
+  updateLocation,
+  deleteLocation,
+} = require("../../controllers/public/location.controller");
 
 const router = Router();
 
@@ -15,7 +18,6 @@ router.post("/", createLocation);
 router.put("/:id", updateLocation);
 
 // delete location
-router.delete("/:id", deleteLocation);      
+router.delete("/:id", deleteLocation);
 
-
-export default router;
+module.exports = router;

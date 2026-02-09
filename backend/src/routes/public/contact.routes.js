@@ -1,11 +1,11 @@
-import express from "express";
-import {
+const express = require("express");
+const {
   createMessage,
   getAllMessages,
   getMessageById,
   updateMessage,
   deleteMessage,
-} from "../../controllers/public/contact.controller.js";
+} = require("../../controllers/public/contact.controller");
 
 const router = express.Router();
 
@@ -15,4 +15,4 @@ router.get("/:id", getMessageById);
 router.put("/:id", updateMessage);
 router.delete("/:id", deleteMessage);
 
-export default router;
+module.exports = router;

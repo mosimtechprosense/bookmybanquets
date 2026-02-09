@@ -1,6 +1,6 @@
-import { ZodError } from "zod";
+const { ZodError } = require("zod");
 
-export const validator = (schema) => (req, res, next) => {
+const validator = (schema) => (req, res, next) => {
   try {
     ["body", "params", "query"].forEach((key) => {
       if (schema[key]) {
@@ -9,16 +9,17 @@ export const validator = (schema) => (req, res, next) => {
     });
 
     next();
-
   } catch (error) {
     if (error instanceof ZodError) {
       return res.status(400).json({
         success: false,
         message: "Validation Failed",
-        errors: error.errors
+        errors: error.errors,
       });
     }
 
     next(error);
   }
 };
+
+module.exports = { validator };

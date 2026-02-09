@@ -1,13 +1,12 @@
-import prisma from "../../config/db.js"
-import slugify from "slugify"
-import slugToName from "../../utils/slugToName.js"
+const prisma = require("../../config/db.js")
+const slugify = require("slugify")
+const slugToName = require("../../utils/slugToName.js")
 
 // CREATE
-export const createLocalityContentDB = async (data) => {
-const slug =
-  data.slug ||
-  slugify(data.name, { lower: true })
-
+const createLocalityContentDB = async (data) => {
+  const slug =
+    data.slug ||
+    slugify(data.name, { lower: true })
 
   return prisma.localityContent.create({
     data: {
@@ -25,34 +24,34 @@ const slug =
 }
 
 // READ ALL (Admin / future CMS)
-export const getAllLocalityContentDB = async () => {
+const getAllLocalityContentDB = async () => {
   return prisma.localityContent.findMany({
     orderBy: { created_at: "desc" }
   })
 }
 
 // READ BY ID
-export const getLocalityContentByIdDB = async (id) => {
+const getLocalityContentByIdDB = async (id) => {
   return prisma.localityContent.findUnique({
     where: { id: BigInt(id) }
   })
 }
 
 // READ BY SLUG (Frontend SEO page)
-export const getLocalityContentBySlugDB = async (slug) => {
+const getLocalityContentBySlugDB = async (slug) => {
   const name = slugToName(slug)
 
   return prisma.localities.findFirst({
     where: {
       name: {
-        equals: name,      }
+        equals: name
+      }
     }
   })
 }
 
-
 // UPDATE
-export const updateLocalityContentDB = async (id, data) => {
+const updateLocalityContentDB = async (id, data) => {
   return prisma.localityContent.update({
     where: { id: BigInt(id) },
     data: {
@@ -66,8 +65,17 @@ export const updateLocalityContentDB = async (id, data) => {
 }
 
 // DELETE
-export const deleteLocalityContentDB = async (id) => {
+const deleteLocalityContentDB = async (id) => {
   return prisma.localityContent.delete({
     where: { id: BigInt(id) }
   })
+}
+
+module.exports = {
+  createLocalityContentDB,
+  getAllLocalityContentDB,
+  getLocalityContentByIdDB,
+  getLocalityContentBySlugDB,
+  updateLocalityContentDB,
+  deleteLocalityContentDB
 }

@@ -1,35 +1,43 @@
-import { createListingDB, getAllListingDB, getListingByIdDB, updateListingDB, deleteListingDB, getRecommendedListingsDB, getHighDemandListingsDB, getSimilarListingsDB } from "../../services/public/listing.service.js";
+const {
+  createListingDB,
+  getAllListingDB,
+  getListingByIdDB,
+  updateListingDB,
+  deleteListingDB,
+  getRecommendedListingsDB,
+  getHighDemandListingsDB,
+  getSimilarListingsDB,
+} = require("../../services/public/listing.service");
 
 
- //todo: CREATE LISTING
-export const createListing = async (req, res) => {
-    try {
-        const listing = await createListingDB(req.body);
+// todo: CREATE LISTING
+const createListing = async (req, res) => {
+  try {
+    const listing = await createListingDB(req.body);
 
-        res.status(201).json({
-            success: true,
-            message: "Listing created successfully",
-            data: listing,
-        });
-    } catch (error) {
-        console.error("Listing created successfully",error);
-        res.status(500).json({
-            success: false,
-            message: "Server Error"
-        });
-    }
+    res.status(201).json({
+      success: true,
+      message: "Listing created successfully",
+      data: listing,
+    });
+  } catch (error) {
+    console.error("Listing created successfully", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
 };
 
 
-
-//*  GET ALL LISTINGS (WITH FILTERS + PAGINATION)
-export const getAllListing = async (req, res) => {
+//* GET ALL LISTINGS (WITH FILTERS + PAGINATION)
+const getAllListing = async (req, res) => {
   try {
     const filters = req.query;
 
-    //  FRONTEND PAGINATION SUPPORT
+    // FRONTEND PAGINATION SUPPORT
     const skip = Number(filters.skip) || 0;
-    const take = Number(filters.take) || 10; // default 10 per page
+    const take = Number(filters.take) || 10;
 
     // Remove pagination params from filters
     delete filters.skip;
@@ -54,9 +62,8 @@ export const getAllListing = async (req, res) => {
 };
 
 
-
-//*  GET RECOMMENDED LISTINGS
-export const getRecommendedListings = async (req, res) => {
+//* GET RECOMMENDED LISTINGS
+const getRecommendedListings = async (req, res) => {
   try {
     const { limit, city, locality } = req.query;
 
@@ -89,91 +96,88 @@ export const getRecommendedListings = async (req, res) => {
     console.error("Get Recommended Error:", error);
     res.status(500).json({
       success: false,
-      message: "Server Error"
+      message: "Server Error",
     });
   }
 };
 
 
+//* GET HIGH DEMAND LISTINGS
+const getHighDemandListings = async (req, res) => {
+  try {
+    const { limit = 10, city, locality } = req.query;
 
+    const listings = await getHighDemandListingsDB(Number(limit), city);
 
+    const result = listings.map(l => ({
+      id: l.id,
+      title: l.title,
+      excerpt: l.excerpt,
+      description: l.description,
+      locality: l.locality,
+      city: l.city,
+      images: l.venue_images.map(img => img.image_url),
+      capacityFrom: l.min_guest,
+      capacityTo: l.max_guest,
+      vegPrice: l.vegPrice,
+      nonVegPrice: l.nonVegPrice,
+    }));
 
-//*  GET HIGH DEMAND LISTINGS
-export const getHighDemandListings = async (req, res) => {
-    try {
-        const { limit = 10, city, locality} = req.query;
-
-        const listings = await getHighDemandListingsDB(Number(limit), city);
-
-        const result = listings.map(l => ({
-            id: l.id,
-            title: l.title,
-            excerpt: l.excerpt,
-            description: l.description,
-            locality: l.locality,
-            city: l.city,
-            images: l.venue_images.map(img => img.image_url),
-            capacityFrom: l.min_guest,
-            capacityTo: l.max_guest,
-            vegPrice: l.vegPrice,
-            nonVegPrice: l.nonVegPrice,
-        }));
-
-        res.status(200).json({
-            success: true,
-            count: result.length,
-            data: result,
-        });
-    } catch (error) {
-        console.error("Get High Demanded Error:", error);
-        res.status(500).json({
-            success: false,
-            message: "Server Error"
-        });
-    }
+    res.status(200).json({
+      success: true,
+      count: result.length,
+      data: result,
+    });
+  } catch (error) {
+    console.error("Get High Demanded Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
 };
 
 
+//* GET SINGLE LISTING
+const getListingById = async (req, res) => {
+  try {
+    const id = req.params.id;
 
+    const listing = await getListingByIdDB(id);
 
-//*  GET SINGLE LISTING
-export const getListingById = async (req, res) => {
-    try {
-        const id = req.params.id;
-
-        const listing = await getListingByIdDB(id);
-        
-        if(!listing || listing.status === false){
-            return res.status(404).json({
-                success: false,
-                message: "Listings not found",
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            data: listing,
-        });
-    } catch (error) {
-        console.error("Get Listing By ID Error:", error);
-        res.status(500).json({
-            success: false,
-            message: "Server Error"
-        });
+    if (!listing || listing.status === false) {
+      return res.status(404).json({
+        success: false,
+        message: "Listings not found",
+      });
     }
+
+    res.status(200).json({
+      success: true,
+      data: listing,
+    });
+  } catch (error) {
+    console.error("Get Listing By ID Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
 };
 
 
-
-////*  GET SIMILAR LISTING
-export const getSimilarListings = async (req, res) => {
+//* GET SIMILAR LISTINGS
+const getSimilarListings = async (req, res) => {
   try {
     const { id } = req.params;
     console.log("Received listing ID for similar:", id);
 
     const similarListings = await getSimilarListingsDB(id);
 
-    console.log("Number of similar listings fetched:", similarListings.length);
+    console.log(
+      "Number of similar listings fetched:",
+      similarListings.length
+    );
 
     res.status(200).json({
       success: true,
@@ -190,76 +194,80 @@ export const getSimilarListings = async (req, res) => {
 };
 
 
-
-
-
 //? UPDATE LISTING
-export const updateListing = async (req, res) => {
-    try {
-        const { id } = req.params;
+const updateListing = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-        if (!id) {
-            return res.status(400).json({
-                success: false,
-                message: "Listing ID is required",
-            });
-        }
-
-        // Check if listing exists
-        const existing = await getListingByIdDB(id);
-
-        if (!existing || existing.status === false) {
-            return res.status(404).json({
-                success: false,
-                message: "Listing not found",
-            });
-        }
-
-        // Update listing
-        const updated = await updateListingDB(id, req.body);
-
-        res.status(200).json({
-            success: true,
-            message: "Listing updated successfully",
-            data: updated,
-        });
-
-    } catch (error) {
-        console.error("Update Listing Error:", error);
-        res.status(500).json({
-            success: false,
-            message: "Server Error"
-        });
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Listing ID is required",
+      });
     }
+
+    const existing = await getListingByIdDB(id);
+
+    if (!existing || existing.status === false) {
+      return res.status(404).json({
+        success: false,
+        message: "Listing not found",
+      });
+    }
+
+    const updated = await updateListingDB(id, req.body);
+
+    res.status(200).json({
+      success: true,
+      message: "Listing updated successfully",
+      data: updated,
+    });
+  } catch (error) {
+    console.error("Update Listing Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
 };
 
 
-
-
 //! DELETE LISTING (SOFT DELETE)
-export const deleteListing = async(req, res) => {
-    try {
-        const id = req.params.id;
+const deleteListing = async (req, res) => {
+  try {
+    const id = req.params.id;
 
-        const listing = await getListingByIdDB(id);
-        if(!listing){
-            return res.status(404).json({
-                success: false,
-                message: "Listing not found",
-            });
-        }
-
-        await deleteListingDB(id);
-
-        res.status(200).json({
-            success: true,
-            message:  "Listing deleted (status = false)",
-        });
-    } catch (error) {
-        console.error("Delete Listing Error:", error);
-        res.status(500).json({
-            success: false,
-            message: "Server Error"
-        });
+    const listing = await getListingByIdDB(id);
+    if (!listing) {
+      return res.status(404).json({
+        success: false,
+        message: "Listing not found",
+      });
     }
+
+    await deleteListingDB(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Listing deleted (status = false)",
+    });
+  } catch (error) {
+    console.error("Delete Listing Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+
+module.exports = {
+  createListing,
+  getAllListing,
+  getRecommendedListings,
+  getHighDemandListings,
+  getListingById,
+  getSimilarListings,
+  updateListing,
+  deleteListing,
 };

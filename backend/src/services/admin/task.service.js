@@ -1,8 +1,8 @@
-import { PrismaClient } from "@prisma/client";
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 // 1️⃣ ASSIGN TASK
-export const assignTask = async ({
+const assignTask = async ({
   banquet_inquiry_id,
   manager_id,
   assignedForDate
@@ -18,7 +18,7 @@ export const assignTask = async ({
 };
 
 // 2️⃣ ROLE BASED TASK LIST
-export const listTasksByRole = async (user) => {
+const listTasksByRole = async (user) => {
   const baseQuery = {
     include: {
       lead: true,
@@ -39,7 +39,7 @@ export const listTasksByRole = async (user) => {
 };
 
 // 3️⃣ TASK DETAIL (EYE ICON)
-export const getTaskById = (id) =>
+const getTaskById = (id) =>
   prisma.tasks.findUnique({
     where: { id: BigInt(id) },
     include: {
@@ -50,7 +50,7 @@ export const getTaskById = (id) =>
   });
 
 // 4️⃣ SUBMIT REPORT
-export const submitTaskReport = (taskId, { remark, visitDate }) =>
+const submitTaskReport = (taskId, { remark, visitDate }) =>
   prisma.task_reports.create({
     data: {
       task_id: BigInt(taskId),
@@ -58,3 +58,10 @@ export const submitTaskReport = (taskId, { remark, visitDate }) =>
       visitDate: new Date(visitDate)
     }
   });
+
+module.exports = {
+  assignTask,
+  listTasksByRole,
+  getTaskById,
+  submitTaskReport
+};

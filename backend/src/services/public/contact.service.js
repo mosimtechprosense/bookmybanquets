@@ -1,35 +1,35 @@
-import prisma from "../../config/db.js"
-import { transporter } from "../../config/email.js"
+const prisma = require("../../config/db.js");
+const { transporter } = require("../../config/email.js");
 
 
 //* Create contact message + send email
-export const createContactMessage = async ({ name, email, phone, message }) => {
+const createContactMessage = async ({ name, email, phone, message }) => {
 
   // Decide form type
   const isContactForm = Boolean(email && email.trim());
   const formType = isContactForm ? "contact form" : "discount form";
-   
+
   // Dummy email for DB only (for discount from process)
   const prismaEmail = isContactForm ? email : "no-reply@bookmybanquets.in";
 
   // Save message to database
   const savedMessage = await prisma.contactmessage.create({
-    data: { name,  email: prismaEmail, phone, message }
-  })
-  
+    data: { name, email: prismaEmail, phone, message }
+  });
+
 
   // Labels for the email
   const emailLabelKey = isContactForm ? "Email" : "Phone";
   const emailLabelValue = isContactForm ? email : phone;
- 
+
 
   // Send email to admin
   await transporter.sendMail({
     from: `"BookMyBanquets" <${process.env.EMAIL_USER}>`,
-    to: process.env.EMAIL_USER, 
+    to: process.env.EMAIL_USER,
     replyTo: isContactForm ? email : process.env.EMAIL_USER,
     subject: `New ${formType} submission`,
-html: `
+    html: `
   <div style="
     max-width: 600px;
     margin: auto;
@@ -87,40 +87,50 @@ html: `
       Please do not reply directly to this email.
     </div>
   </div>
-`})
+`}
+  );
 
-  return savedMessage
-}
+  return savedMessage;
+};
 
 
 //* Get all messages
-export const getAllContactMessages = async () => {
+const getAllContactMessages = async () => {
   return prisma.contactmessage.findMany({
     orderBy: { createdAt: "desc" }
-  })
-}
+  });
+};
 
 
 //* Get message by ID
-export const getContactMessageById = async (id) => {
+const getContactMessageById = async (id) => {
   return prisma.contactmessage.findUnique({
     where: { id: parseInt(id) }
-  })
-}
+  });
+};
 
 
 //? Update message
-export const updateContactMessage = async (id, data) => {
+const updateContactMessage = async (id, data) => {
   return prisma.contactmessage.update({
     where: { id: parseInt(id) },
     data
-  })
-}
+  });
+};
 
 
 //! Delete message
-export const deleteContactMessage = async (id) => {
+const deleteContactMessage = async (id) => {
   return prisma.contactmessage.delete({
     where: { id: parseInt(id) }
-  })
-}
+  });
+};
+
+
+module.exports = {
+  createContactMessage,
+  getAllContactMessages,
+  getContactMessageById,
+  updateContactMessage,
+  deleteContactMessage
+};

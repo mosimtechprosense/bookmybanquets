@@ -1,5 +1,5 @@
-import express from "express";
-import {
+const express = require("express");
+const {
   listLeadsController,
   getLeadController,
   updateLeadController,
@@ -12,12 +12,14 @@ import {
   updateRMNoteController,
   deleteRMNoteController,
   updateLeadEventController,
-  deleteLeadController
-} from "../../controllers/admin/lead.controller.js";
+  deleteLeadController,
+} = require("../../controllers/admin/lead.controller");
 
-import { auth } from "../../middlewares/admin/auth.middleware.js";
+const { auth } = require("../../middlewares/admin/auth.middleware");
 
 const router = express.Router();
+
+// Apply auth to all lead routes
 router.use(auth);
 
 //* LEADS
@@ -27,13 +29,11 @@ router.get("/:id", getLeadController);
 router.put("/:id", updateLeadController);
 router.delete("/:id", deleteLeadController);
 
-
 //* RM NOTES
 router.get("/:id/rm-notes", getRMNotesController);
 router.post("/:id/rm-notes", addRMNoteController);
 router.put("/rm-notes/:noteId", updateRMNoteController);
 router.delete("/rm-notes/:noteId", deleteRMNoteController);
-
 
 //* EVENTS
 router.get("/:id/events", getLeadEventsController);
@@ -41,5 +41,4 @@ router.post("/:id/events", addLeadEventController);
 router.put("/events/:eventId", updateLeadEventController);
 router.delete("/events/:eventId", deleteLeadEventController);
 
-
-export default router;
+module.exports = router;

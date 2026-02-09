@@ -1,14 +1,16 @@
-import express from "express";
-import {
+const express = require("express");
+const {
   assignTaskController,
   listTasksController,
   getTaskByIdController,
-  submitTaskReportController
-} from "../../controllers/admin/task.controller.js";
-import { auth } from "../../middlewares/admin/auth.middleware.js";
+  submitTaskReportController,
+} = require("../../controllers/admin/task.controller");
+
+const { auth } = require("../../middlewares/admin/auth.middleware");
 
 const router = express.Router();
 
+// Apply auth to all task routes
 router.use(auth);
 
 // assign task
@@ -23,4 +25,4 @@ router.get("/:id", getTaskByIdController);
 // submit report
 router.post("/:id/report", submitTaskReportController);
 
-export default router;
+module.exports = router;

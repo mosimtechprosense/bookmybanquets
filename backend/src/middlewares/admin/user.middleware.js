@@ -1,4 +1,4 @@
-export const onlyAdmin = (req, res, next) => {
+const onlyAdmin = (req, res, next) => {
   const role = req.user?.role;
 
   if (!role) {
@@ -15,8 +15,7 @@ export const onlyAdmin = (req, res, next) => {
   });
 };
 
-
-export const allowRoles = (...roles) => {
+const allowRoles = (...roles) => {
   return (req, res, next) => {
     const role = req.user?.role;
 
@@ -26,4 +25,9 @@ export const allowRoles = (...roles) => {
 
     next();
   };
+};
+
+module.exports = {
+  onlyAdmin,
+  allowRoles,
 };

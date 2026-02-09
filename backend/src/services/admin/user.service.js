@@ -1,14 +1,14 @@
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt";
-
-
+const { PrismaClient } = require("@prisma/client");
+const bcrypt = require("bcrypt");
 
 const prisma = new PrismaClient();
 const SALT_ROUNDS = 10;
 
 // --- User CRUD ---
-export const createUser = async ({ name, email, password, role, is_active }) => {
-  if (!["LEAD_USER", "DATA_ENTRY_USER", "VENUE_MANAGER", "ADMIN"].includes(role)) throw new Error("Invalid role");
+const createUser = async ({ name, email, password, role, is_active }) => {
+  if (!["LEAD_USER", "DATA_ENTRY_USER", "VENUE_MANAGER", "ADMIN"].includes(role)) {
+    throw new Error("Invalid role");
+  }
 
   if (!password || password.length < 6) {
     throw new Error("Password must be at least 6 characters");
@@ -29,7 +29,7 @@ export const createUser = async ({ name, email, password, role, is_active }) => 
   return user;
 };
 
-export const listUsers = async (currentRole) => {
+const listUsers = async (currentRole) => {
   return prisma.admins.findMany({
     where:
       currentRole === "SUPER_ADMIN"
@@ -39,9 +39,8 @@ export const listUsers = async (currentRole) => {
   });
 };
 
-
-export const updateUser = async (id, data) => {
-  const { password, ...safeData } = data; 
+const updateUser = async (id, data) => {
+  const { password, ...safeData } = data;
 
   return await prisma.admins.update({
     where: { id: BigInt(id) },
@@ -49,23 +48,20 @@ export const updateUser = async (id, data) => {
   });
 };
 
-
-export const deleteUser = async (id) => {
+const deleteUser = async (id) => {
   return await prisma.admins.delete({
     where: { id: BigInt(id) },
   });
 };
 
-
-export const getUserById = async (id) => {
+const getUserById = async (id) => {
   return await prisma.admins.findUnique({
     where: { id: BigInt(id) },
     select: { id: true, name: true, email: true, role: true, is_active: true },
   });
 };
 
-
-export const adminResetPassword = async (id, newPassword) => {
+const adminResetPassword = async (id, newPassword) => {
   if (!newPassword || newPassword.length < 6) {
     throw new Error("Password must be at least 6 characters");
   }
@@ -82,3 +78,11 @@ export const adminResetPassword = async (id, newPassword) => {
   return true;
 };
 
+module.exports = {
+  createUser,
+  listUsers,
+  updateUser,
+  deleteUser,
+  getUserById,
+  adminResetPassword,
+};
