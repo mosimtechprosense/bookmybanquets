@@ -100,7 +100,7 @@ export default function LeadFormModal({ open, editingLead, onClose, onSaved, }) 
   if (!open) return null;
   return (
     <div
-      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 overflow-auto"
+      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hide-scrollbar overflow-auto"
       onClick={onClose}
     >
       <div
